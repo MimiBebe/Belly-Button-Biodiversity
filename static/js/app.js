@@ -54,8 +54,11 @@ function getMetaData(subjectId){
         // first position has the array of interest
         var subjectMetaData = subjectMetaDataArray[0];
         var metaDataPanel = d3.select('#sample-metadata');
+
+        // clear teh panel
         metaDataPanel.html("");
-        // console.log(subjectMetaData)
+
+        //  populate metadata
         Object.entries(subjectMetaData).forEach(([key,value]) => {
 
             var metaKeys = key;
@@ -68,10 +71,6 @@ function getMetaData(subjectId){
         
     });
 
-
-
-
-
 }
 
 function drawBubleChart(subjectId){
@@ -79,36 +78,10 @@ function drawBubleChart(subjectId){
     console.log(subjectId)
 }
 
-// index value as value of drop down,
-// values as text displayed in the drop down
-// ie.: <option value="index">Text</option>
-// function addOptions() {
-//     d3.json(url).then(function(data) {
-//         data.names.forEach((name, i) => {
-//             var appendOption = selectDropdown.append("option").text(name).attr('value', i);
-//             console.log(appendOption)
-//         });
-//     });
-// }
 
 // both values and text displayed in drop down are names in json
 function addOptions(url) {
     d3.json(url).then(function(data) {
-
-        // check to see how many keys in the samples data
-        // 3 keys: names, metadata, samples
-        // const keys = Object.keys(data);
-
-        // var subjectNames = data.names;
-        // var subjectMetadata = data.metadata;
-        // var subjectSamples = data.samples;
-        
-        // check keys in each var above
-        // keys in "metadata" are: "id", "ethnicity", "gender", "age", "location", "bbtype", "wfreq"
-        // const subjectMetaKeys = Object.keys(subjectMetadata[0]);
-
-        // keys in "samples" are: "id", "otu_ids", "sample_values", "otu_labels"
-        // const subjectSamplesKeys = Object.keys(subjectSamples[0])
 
         data.names.forEach((name) => {
             //  append the drop down menu
@@ -122,10 +95,21 @@ function addOptions(url) {
 
 
 // Call updatePlotly() when a change takes place to the DOM
-// d3.selectAll("#selDataset").on("change", updatePlotly);
+d3.selectAll("#selDataset").on("change", updatePlotly);
 
 // This function is called when a dropdown menu item is selected
 function initHtml(url) {
+    // populate drop down menu
+    addOptions(dataUrl);
+
+    optionChanged(940);
+   
+  }
+
+initHtml(dataUrl)
+
+
+function updatePlotly() {
     // populate drop down menu
     addOptions(dataUrl);
 
@@ -134,13 +118,5 @@ function initHtml(url) {
     // Assign the value of the dropdown menu option to a variable
     var subjectId = dropdownMenu.property("value");
 
-    // /optionChanged(subjectId);
-    
-    // get metadata
-    getMetaData(subjectId)
-
-    // console.log(subjectId);
-    drawBarChart(subjectId)
+    optionChanged(subjectId);
   }
-
-initHtml(dataUrl)
