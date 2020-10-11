@@ -6,7 +6,6 @@ function optionChanged(subjectId){
     getMetaData(subjectId);
     drawBarChart(subjectId);
     drawBubleChart(subjectId);
-    // upddatePlot(subjectId);
 }
 
 function drawBarChart(subjectId){
@@ -73,9 +72,44 @@ function getMetaData(subjectId){
 
 }
 
+
 function drawBubleChart(subjectId){
-    console.log("drawBubleChart")
-    console.log(subjectId)
+
+    d3.json(dataUrl).then((data) => {
+
+        var allSamples = data.samples;
+        var subjectSampleArray = allSamples.filter(s => s.id == subjectId);
+        // console.log(subjectSampleArray)
+        // first position has the array of interest
+        var subjectSamples = subjectSampleArray[0];
+
+        var subjectOtuIds = subjectSamples.otu_ids;
+        var subjectOtuLabels = subjectSamples.otu_labels;
+        var subjectSampleValue = subjectSamples.sample_values;
+
+        var subjectBubbleData = {
+            x: subjectOtuIds,
+            y: subjectSampleValue,
+            mode: 'markers',
+            text: subjectOtuLabels,
+            marker: {
+                size: subjectSampleValue,
+                colorscale: 'Blue',
+                opacity: 0.5,
+              }
+        }
+
+        var bubbleLayout = {
+            xaxis: {
+                title: "OTU Id",
+            }
+        }
+
+        Plotly.newPlot("bubble",[subjectBubbleData],bubbleLayout);
+
+    });
+
+
 }
 
 
