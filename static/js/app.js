@@ -10,13 +10,68 @@ function optionChanged(subjectId){
 }
 
 function drawBarChart(subjectId){
-    console.log("drawBarChart")
-    console.log(subjectId)
+    d3.json(dataUrl).then((data) => {
+
+        var allSamples = data.samples;
+        var subjectSampleArray = allSamples.filter(s => s.id == subjectId);
+        // console.log(subjectSamples)
+        // first position has the array of interest
+        var subjectSamples = subjectSampleArray[0];
+
+        var subjectOtuIds = subjectSamples.otu_ids;
+        var subjectOtuLabels = subjectSamples.otu_labels;
+        var subjectSampleValue = subjectSamples.sample_values;
+
+        var barYticks = subjectOtuIds.slice(0,10).map(otuId => `OTU ${otuId}`).reverse()
+
+        var subjectBarData = {
+            x: subjectSampleValue.slice(0,10).reverse(),
+            y: barYticks,
+            type: "bar",
+            text: subjectOtuLabels.slice(0,10).reverse(),
+            orientation: "h"
+        }
+
+        var barLayout = {
+            title: "Top 10 Bacteria Cultures Found",
+            margin: {t: 30, l:150}
+
+        }
+
+        Plotly.newPlot("bar",[subjectBarData],barLayout);
+
+    });
 }
+
+
 function getMetaData(subjectId){
     
-    console.log("getMetaData")
-    console.log(subjectId)
+    d3.json(dataUrl).then((data) => {
+
+        var allMetaData = data.metadata;
+        var subjectMetaDataArray = allMetaData.filter(md => md.id == subjectId);
+        // console.log(ubjectMetaDataArray)
+        // first position has the array of interest
+        var subjectMetaData = subjectMetaDataArray[0];
+        var metaDataPanel = d3.select('#sample-metadata');
+        metaDataPanel.html("");
+        // console.log(subjectMetaData)
+        Object.entries(subjectMetaData).forEach(([key,value]) => {
+
+            var metaKeys = key;
+            var metaValues = value;
+
+            metaDataPanel.append("h5").text(`${key} : ${value}`)
+
+        });
+
+        
+    });
+
+
+
+
+
 }
 
 function drawBubleChart(subjectId){
@@ -70,7 +125,7 @@ function addOptions(url) {
 // d3.selectAll("#selDataset").on("change", updatePlotly);
 
 // This function is called when a dropdown menu item is selected
-function initHtml() {
+function initHtml(url) {
     // populate drop down menu
     addOptions(dataUrl);
 
@@ -79,11 +134,13 @@ function initHtml() {
     // Assign the value of the dropdown menu option to a variable
     var subjectId = dropdownMenu.property("value");
 
-    optionChanged(subjectId);
-
+    // /optionChanged(subjectId);
+    
+    // get metadata
+    getMetaData(subjectId)
 
     // console.log(subjectId);
-
+    drawBarChart(subjectId)
   }
 
-initHtml()
+initHtml(dataUrl)
